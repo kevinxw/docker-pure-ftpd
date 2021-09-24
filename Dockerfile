@@ -1,8 +1,12 @@
 #Stage 1 : builder debian image
-FROM debian:bulleye as builder
+FROM debian:bullseye as builder
 
 # properly setup debian sources
 ENV DEBIAN_FRONTEND noninteractive
+RUN echo "deb-src http://deb.debian.org/debian bullseye main\n\
+deb-src http://deb.debian.org/debian bullseye-updates main\n\
+deb-src http://deb.debian.org/debian-security/ bullseye-security main\n\
+" >> /etc/apt/sources.list
 
 # install package building helpers
 # rsyslog for logging (ref https://github.com/stilliard/docker-pure-ftpd/issues/17)
@@ -20,7 +24,7 @@ RUN mkdir /tmp/pure-ftpd/ && \
 	dpkg-buildpackage -b -uc | grep -v '^checking' | grep -v ': Entering directory' | grep -v ': Leaving directory'
 
 #Stage 2 : actual pure-ftpd image
-FROM debian:bulleye-slim
+FROM debian:bullseye-slim
 
 LABEL maintainer "Kevin Wang <kevixw@gmail.com>"
 
